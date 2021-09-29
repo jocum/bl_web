@@ -1,61 +1,15 @@
 <template>
-  <div class="makeup-paint" :style="{ height: `${w + 30}px` }">
-    <template v-for="p in data">
-      {{ p.bgw }}mm*{{ p.bgh }}mm
-      <div class="page" :key="`${tkey}-${p.page}`" :style="pageStyle(p)">
-        <img
-          class="page-img"
-          :src="d.image"
-          v-for="d in p.point"
-          :key="d.obid"
-          :alt="`${d.x},${d.y},${d.with},${d.height},${d.obid}`"
-          :style="imgStyle(d)"
-        />
-      </div>
-    </template>
-  </div>
+<div>
+  <h2>材料({{data.Width}}*{{data.Height}})利用率:{{data.Rate}}</h2>
+  <canvas ref="board" class="board" />
+</div>
 </template>
 
 <script>
 export default {
-  props: { data: Array, size: String, tkey: [String] },
+  props: { data: Object, size: String, tkey: [String] },
   created() {
     console.log("makeuppaint:", this.w, this.data, this.size);
-    fetch("http://172.17.3.180:9999")
-      .then(function (res) {
-        return res.json();
-      })
-      .then(function (myjson) {
-        var canvas = document.getElementById("mycanvas");
-        // console.log(myjson.Boxs);
-        const randColor = function(){
-          return Math.round(Math.random()*255)
-        }
-        myjson.Boxs.forEach((item) => {
-          console.log(item);
-          canvas.setAttribute("width", item.Width);
-          canvas.setAttribute("height", item.Height);
-          item.Rects.forEach((rect) => {
-            var context = canvas.getContext("2d");
-            context.strokeStyle = "black";
-            context.lineWidth = 1;
-            context.strokeRect(
-              rect.Point.x - rect.W,
-              rect.Point.y - rect.H,
-              rect.W,
-              rect.H
-            );
-            context.fillStyle = `rgba(${randColor()},${randColor()},${randColor()},0.5)`;
-            context.fillRect(
-              rect.Point.x - rect.W,
-              rect.Point.y - rect.H,
-              rect.W,
-              rect.H
-            );
-            console.log(rect);
-          });
-        });
-      });
   },
   computed: {
     w() {
@@ -67,7 +21,91 @@ export default {
       return [100, 200];
     },
   },
+  watch: {
+    data: {
+      handler(val) {
+        console.log("val:", val);
+        if (val) {
+          this.$nextTick(() => {
+            this.painting(val);
+          });
+        }
+      },
+      immediate: true,
+    },
+  },
   methods: {
+    paintingAll() {
+      fetch("http://172.17.3.180:9999")
+        .then(function (res) {
+          return res.json();
+        })
+        .then(function (myjson) {
+          var canvas = document.getElementById("mycanvas");
+          // console.log(myjson.Boxs);
+          const randColor = function () {
+            return Math.round(Math.random() * 255);
+          };
+          myjson.Boxs.forEach((item) => {
+            console.log(item);
+            canvas.setAttribute("width", item.Width);
+            canvas.setAttribute("height", item.Height);
+            item.Rects.forEach((rect) => {
+              var context = canvas.getContext("2d");
+              context.strokeStyle = "black";
+              context.lineWidth = 1;
+              context.strokeRect(
+                rect.Point.x - rect.W,
+                rect.Point.y - rect.H,
+                rect.W,
+                rect.H
+              );
+              context.fillStyle = `rgba(${randColor()},${randColor()},${randColor()},0.5)`;
+              context.fillRect(
+                rect.Point.x - rect.W,
+                rect.Point.y - rect.H,
+                rect.W,
+                rect.H
+              );
+              console.log(rect);
+            });
+          });
+
+        });
+    },
+    painting(item = { Width: 0, Height: 0, Rects: [] }) {
+      // console.log("painting:", item);
+      // const canvas = document.getElementById("board");
+      const canvas = this.$refs["board"];
+      const randColor = function () {
+        return Math.round(Math.random() * 255);
+      };
+      canvas.setAttribute("width", item.Width);
+      canvas.setAttribute("height", item.Height);
+      var context = canvas.getContext("2d");
+      console.log("canvas:", canvas, context);
+      item.Rects.forEach((rect) => {
+        context.strokeStyle = "black";
+        context.lineWidth = 1;
+        context.strokeRect(
+          rect.Point.x - rect.W,
+          rect.Point.y - rect.H,
+          rect.W,
+          rect.H
+        );
+        context.fillStyle = `rgba(${randColor()},${randColor()},${randColor()},0.5)`;
+        context.fillRect(
+          rect.Point.x - rect.W,
+          rect.Point.y - rect.H,
+          rect.W,
+          rect.H
+        );
+        // console.log(rect);
+      });
+      // if (item.UseH < item.Height){
+      //   context.
+      // }
+    },
     pageStyle(p) {
       // const h = this.findMaxHeight(p.point)
       const { bgw, bgh } = p;
@@ -107,6 +145,9 @@ export default {
 </script>
 
 <style  scoped>
+.board {
+  border: 1px solid rgb(199, 198, 198);
+}
 .makeup-paint {
   position: relative;
 }

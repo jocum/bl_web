@@ -1,20 +1,39 @@
 <template>
   <div id="app">
     <!-- <img alt="Vue logo" src="./assets/logo.png"> -->
-    <canvas id="mycanvas" width="1650" height="2400"></canvas>
-    <MakeupPaint  msg="Welcome to Your Vue.js App"/>
+    <!-- <canvas id="mycanvas" width="1650" height="2400"></canvas> -->
+    <MakeupPaint
+      v-for="(d, idx) in data.Boxs"
+      :key="idx"
+      :data="d"
+      msg="Welcome to Your Vue.js App"
+    />
   </div>
 </template>
 
 <script>
-import MakeupPaint from './components/MakeupPaint.vue'
+import MakeupPaint from "./components/MakeupPaint.vue";
 
 export default {
-  name: 'App',
+  name: "App",
+  data() {
+    return {
+      data: [],
+    };
+  },
   components: {
-    MakeupPaint 
-  }
-}
+    MakeupPaint,
+  },
+  created() {
+    fetch("http://172.17.3.180:9999")
+      .then(function (res) {
+        return res.json();
+      })
+      .then((res) => {
+        this.data = res;
+      });
+  },
+};
 </script>
 
 <style>
