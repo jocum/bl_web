@@ -21,13 +21,16 @@ export default {
   props: { data: Array, size: String, tkey: [String] },
   created() {
     console.log("makeuppaint:", this.w, this.data, this.size);
-    fetch("http://localhost:9999")
+    fetch("http://172.17.3.180:9999")
       .then(function (res) {
         return res.json();
       })
       .then(function (myjson) {
         var canvas = document.getElementById("mycanvas");
         // console.log(myjson.Boxs);
+        const randColor = function(){
+          return Math.round(Math.random()*255)
+        }
         myjson.Boxs.forEach((item) => {
           console.log(item);
           canvas.setAttribute("width", item.Width);
@@ -36,7 +39,19 @@ export default {
             var context = canvas.getContext("2d");
             context.strokeStyle = "black";
             context.lineWidth = 1;
-            context.strokeRect(rect.Point.x-rect.W,rect.Point.y-rect.H, rect.W, rect.H);
+            context.strokeRect(
+              rect.Point.x - rect.W,
+              rect.Point.y - rect.H,
+              rect.W,
+              rect.H
+            );
+            context.fillStyle = `rgba(${randColor()},${randColor()},${randColor()},0.5)`;
+            context.fillRect(
+              rect.Point.x - rect.W,
+              rect.Point.y - rect.H,
+              rect.W,
+              rect.H
+            );
             console.log(rect);
           });
         });
