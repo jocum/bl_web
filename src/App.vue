@@ -1,17 +1,18 @@
 <template>
   <div id="app">
-    <img alt="Vue logo" src="./assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
+    <!-- <img alt="Vue logo" src="./assets/logo.png"> -->
+    <canvas id="mycanvas" width="1650" height="2400"></canvas>
+    <MakeupPaint  msg="Welcome to Your Vue.js App"/>
   </div>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
+import MakeupPaint from './components/MakeupPaint.vue'
 
 export default {
   name: 'App',
   components: {
-    HelloWorld
+    MakeupPaint 
   }
 }
 </script>
@@ -24,5 +25,8 @@ export default {
   text-align: center;
   color: #2c3e50;
   margin-top: 60px;
+}
+#mycanvas {
+  border: 1px solid rgb(199, 198, 198);
 }
 </style>
